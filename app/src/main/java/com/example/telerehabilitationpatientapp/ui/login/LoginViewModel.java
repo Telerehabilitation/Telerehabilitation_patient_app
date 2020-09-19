@@ -3,21 +3,27 @@ package com.example.telerehabilitationpatientapp.ui.login;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
-import android.util.Patterns;
 
-import com.example.telerehabilitationpatientapp.data.LoginRepository;
+import android.content.Context;
+import android.util.Log;
+
+import com.android.volley.VolleyError;
+import com.example.telerehabilitationpatientapp.data.LoginDataSource;
 import com.example.telerehabilitationpatientapp.data.Result;
 import com.example.telerehabilitationpatientapp.data.model.LoggedInUser;
 import com.example.telerehabilitationpatientapp.R;
+import com.example.telerehabilitationpatientapp.utils.ServerCallback;
+
+import org.json.JSONObject;
 
 public class LoginViewModel extends ViewModel {
 
     private MutableLiveData<LoginFormState> loginFormState = new MutableLiveData<>();
     private MutableLiveData<LoginResult> loginResult = new MutableLiveData<>();
-    private LoginRepository loginRepository;
+    private LoginDataSource loginDataSource;
 
-    LoginViewModel(LoginRepository loginRepository) {
-        this.loginRepository = loginRepository;
+    LoginViewModel(LoginDataSource loginDataSource) {
+        this.loginDataSource = loginDataSource;
     }
 
     LiveData<LoginFormState> getLoginFormState() {
@@ -28,19 +34,28 @@ public class LoginViewModel extends ViewModel {
         return loginResult;
     }
 
-    public void login(String username, String password) {
+    public void login(String username, String password, Context context) {
         // can be launched in a separate asynchronous job
-        Result<LoggedInUser> result = loginRepository.login(username, password);
+        loginDataSource.login(username, password, context, new ServerCallback() {
+            @Override
+            public void onSuccess(JSONObject response) {
+                loginResult.setValue(new LoginResult(true));
+            }
 
-        if (result instanceof Result.Success) {
-            LoggedInUser data = ((Result.Success<LoggedInUser>) result).getData();
-            loginResult.setValue(new LoginResult(new LoggedInUserView(data.getDisplayName())));
-        } else {
-            loginResult.setValue(new LoginResult(R.string.login_failed));
-        }
+            @Override
+            public void onError(VolleyError error) {
+                Log.d("error", error.toString());
+                loginResult.setValue(new LoginResult(error.networkResponse.statusCode));
+            }
+
+            @Override
+            public void onError() {
+                loginResult.setValue(new LoginResult(0));
+            }
+        });
     }
 
-    public void loginDataChanged(String username, String password) {
+    void loginDataChanged(String username, String password) {
         if (!isUserNameValid(username)) {
             loginFormState.setValue(new LoginFormState(R.string.invalid_username, null));
         } else if (!isPasswordValid(password)) {
@@ -55,15 +70,11 @@ public class LoginViewModel extends ViewModel {
         if (username == null) {
             return false;
         }
-        if (username.contains("@")) {
-            return Patterns.EMAIL_ADDRESS.matcher(username).matches();
-        } else {
-            return !username.trim().isEmpty();
-        }
+        return !username.trim().isEmpty();
     }
 
     // A placeholder password validation check
     private boolean isPasswordValid(String password) {
-        return password != null && password.trim().length() > 5;
+        return password != null;
     }
 }

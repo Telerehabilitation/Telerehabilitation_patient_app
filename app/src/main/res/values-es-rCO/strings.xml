@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Telerehabilitation patient app</string>
+    <string name="action_sign_in_short">Acceder</string>
+    <string name="invalid_username">Nombre de usuario no válido</string>
+    <string name="invalid_password">La contraseña debe contener, al menos, 8 caracteres</string>
+    <string name="login_failed">Ocurrió un error al intentar acceder</string>
+    <string name="prompt_username">Nombre de usuario</string>
+    <string name="prompt_password">Contraseña</string>
+    <string name="welcome">Bienvenido</string>
+    <string name="invalid_login">Usuario/Contraseña no válidos</string>
+    <string name="nav_header_title">Paciente</string>
+    <string name="menu_home">Inicio</string>
+    <string name="menu_settings">Configuración</string>
+    <string name="menu_logout">Cerrar sesión</string>
+    <string name="menu_section_user">Usuario</string>
+    <string name="menu_therapy">Terapia</string>
+    <string name="menu_routine">Rutina</string>
+</resources>

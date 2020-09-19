@@ -5,14 +5,28 @@ package com.example.telerehabilitationpatientapp.data;
  */
 public class Result<T> {
     // hide the private constructor to limit subclass types (Success, Error)
-    private Result() {}
+    private T data;
+    Result(T data) {
+        this.data = data;
+    }
+    @Override
+    public String toString() {
+        if (this instanceof Result.Success) {
+            Result.Success success = (Result.Success) this;
+            return "Success[data=" + success.getData().toString() + "]";
+        } else if (this instanceof Result.Error) {
+            Result.Error error = (Result.Error) this;
+            return "Error[exception=" + error.getError().toString() + "]";
+        }
+        return "";
+    }
 
     // Success sub-class
     public final static class Success<T> extends Result {
         private T data;
 
         public Success(T data) {
-            this.data = data;
+            super(data);
         }
 
         public T getData() {
@@ -25,23 +39,11 @@ public class Result<T> {
         private Exception error;
 
         public Error(Exception error) {
-            this.error = error;
+            super(error);
         }
 
         public Exception getError() {
             return this.error;
         }
-    }
-
-    @Override
-    public String toString() {
-        if (this instanceof Result.Success) {
-            Result.Success success = (Result.Success) this;
-            return "Success[data=" + success.getData().toString() + "]";
-        } else if (this instanceof Result.Error) {
-            Result.Error error = (Result.Error) this;
-            return "Error[exception=" + error.getError().toString() + "]";
-        }
-        return "";
     }
 }

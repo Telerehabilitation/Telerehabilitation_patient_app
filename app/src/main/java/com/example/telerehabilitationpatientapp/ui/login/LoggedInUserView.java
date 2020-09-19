@@ -1,4 +1,4 @@
-package  com.example.telerehabilitationpatientapp.ui.login;
+package com.example.telerehabilitationpatientapp.ui.login;
 
 /**
  * Class exposing authenticated user details to the UI.
